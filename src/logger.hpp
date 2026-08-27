@@ -12,10 +12,21 @@
 #define CYAN    "\033[36m"      /* Cyan */
 #define WHITE   "\033[37m"      /* White */
 
-inline void LogError(std::string name, std::string text) {
-  std::cout << RED << name << RESET << ": " << text << std::endl;
+template<typename ...Args>
+void l(Args&&...args) {
+  (std::cout << ... << args);
 }
 
-inline void Log(std::string name, std::string text) {
-  std::cout << CYAN << name << RESET << ": " << text << std::endl;
+template<typename ...Args>
+inline void LogError(std::string name, Args && ...args) {
+  std::cout << RED << name << RESET << ": ";
+  l(args...);
+  std::cout << std::endl;
+}
+
+template<typename ...Args>
+inline void Log(std::string name, Args && ...args) {
+  std::cout << CYAN << name << RESET << ": ";
+  l(args...);
+  std::cout << std::endl;
 }

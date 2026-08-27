@@ -1,4 +1,6 @@
+#include "texture_manager.hpp"
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_render.h>
 #include <algorithm>
 #include <logger.hpp>
 
@@ -34,7 +36,6 @@ int main() {
   }
   Log("Engine", "passed render texture creation");
 
-  // Calculate largest render texture size
   int scale = std::min(
     (1280 / 240),
     (720 / 160)
@@ -45,6 +46,10 @@ int main() {
   rect.h = (rt->h * scale);
   rect.x = int(1280 / 2) - (rect.w / 2);
   rect.y = int(720 / 2) - (rect.h / 2);
+
+  TextureManager::Load(renderer);
+
+
   while (running) {
     while (SDL_PollEvent(&event)) {
       if (event.type == SDL_EVENT_QUIT) running = false;
@@ -56,11 +61,17 @@ int main() {
 
     SDL_SetRenderTarget(renderer, NULL);
 
-
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
     SDL_RenderTexture(renderer, rt, NULL, &rect);
     SDL_RenderPresent(renderer);
   }
+
+  TextureManager::Unload();
+
+  SDL_DestroyRenderer(renderer);
+  Log("Engine", "renderer destroyed");
+  SDL_DestroyWindow(window);
+  Log("Engine", "window destroyed");
   return 1;
 }

@@ -1,3 +1,3 @@
 #!/bin/bash
 
-g++ src/*.cpp -I src -lSDL3 -lSDL3_image -o game
+g++ $(find src -type f -iname *.cpp -print) -I src -lSDL3 -lSDL3_image -o game

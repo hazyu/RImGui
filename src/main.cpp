@@ -1,4 +1,5 @@
-#include "texture_manager.hpp"
+#include <texture_manager.hpp>
+#include <scene_manager.hpp>
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_render.h>
 #include <algorithm>
@@ -48,6 +49,7 @@ int main() {
   rect.y = int(720 / 2) - (rect.h / 2);
 
   TextureManager::Load(renderer);
+  SceneManager::Load();
 
 
   while (running) {
@@ -55,9 +57,13 @@ int main() {
       if (event.type == SDL_EVENT_QUIT) running = false;
     }
 
+    SceneManager::Update();
+
     SDL_SetRenderTarget(renderer, rt);
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
+
+    SceneManager::Draw(renderer);
 
     SDL_SetRenderTarget(renderer, NULL);
 

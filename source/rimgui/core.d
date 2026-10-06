@@ -1,6 +1,7 @@
-module rimgui.core;
+module rmgui.core;
 
-import bindbc.imgui;
+import i2d.imgui;
+import std.stdio;
 import raylib;
 
 ImGuiContext * ctx;
@@ -8,7 +9,6 @@ ImGuiIO * io;
 Texture2D fontTexture;
 
 void rigInit() {
-    auto ret = loadImGui();
     ctx = igCreateContext(null);
     io = igGetIO();
 
@@ -20,9 +20,12 @@ void rigInit() {
     io.BackendPlatformName = "imgui_impl_raylib".ptr;
     io.BackendRendererName = "imgui_impl_raylib_renderer".ptr;
 
-    char * pixels;
-    int width, height;
-    ImFontAtlas_GetTexDataAsRGBA32(io.Fonts, &pixels, &width, &height);
+    igImFontAtlasBuildMain(io.Fonts);
+
+
+    char * pixels = io.Fonts.TexData.Pixels;
+    int width = io.Fonts.TexData.Width;
+    int height = io.Fonts.TexData.Height;
 
     Image image;
     image.data = pixels;
@@ -32,31 +35,7 @@ void rigInit() {
     image.format = PixelFormat.PIXELFORMAT_UNCOMPRESSED_R8G8B8A8;
 
     fontTexture = LoadTextureFromImage(image);
-    ImFontAtlas_SetTexID(io.Fonts, cast(void*)cast(size_t)fontTexture.id);
-
-    io.KeyMap[ImGuiKey.Tab]        = KeyboardKey.KEY_TAB;
-    io.KeyMap[ImGuiKey.LeftArrow]  = KeyboardKey.KEY_LEFT;
-    io.KeyMap[ImGuiKey.RightArrow] = KeyboardKey.KEY_RIGHT;
-    io.KeyMap[ImGuiKey.UpArrow]    = KeyboardKey.KEY_UP;
-    io.KeyMap[ImGuiKey.DownArrow]  = KeyboardKey.KEY_DOWN;
-    io.KeyMap[ImGuiKey.PageUp]    = KeyboardKey.KEY_PAGE_UP;
-    io.KeyMap[ImGuiKey.PageDown]  = KeyboardKey.KEY_PAGE_DOWN;
-    io.KeyMap[ImGuiKey.Home]      = KeyboardKey.KEY_HOME;
-    io.KeyMap[ImGuiKey.End]       = KeyboardKey.KEY_END;
-    io.KeyMap[ImGuiKey.Insert]    = KeyboardKey.KEY_INSERT;
-    io.KeyMap[ImGuiKey.Delete]    = KeyboardKey.KEY_DELETE;
-    io.KeyMap[ImGuiKey.Backspace] = KeyboardKey.KEY_BACKSPACE;
-    io.KeyMap[ImGuiKey.Space]     = KeyboardKey.KEY_SPACE;
-    io.KeyMap[ImGuiKey.Enter]     = KeyboardKey.KEY_ENTER;
-    io.KeyMap[ImGuiKey.Escape]    = KeyboardKey.KEY_ESCAPE;
-    io.KeyMap[ImGuiKey.KeypadEnter] = KeyboardKey.KEY_KP_ENTER;
-    io.KeyMap[ImGuiKey.A]         = KeyboardKey.KEY_A;
-    io.KeyMap[ImGuiKey.C]         = KeyboardKey.KEY_C;
-    io.KeyMap[ImGuiKey.V]         = KeyboardKey.KEY_V;
-    io.KeyMap[ImGuiKey.X]         = KeyboardKey.KEY_X;
-    io.KeyMap[ImGuiKey.Y]         = KeyboardKey.KEY_Y;
-    io.KeyMap[ImGuiKey.Z]         = KeyboardKey.KEY_Z;
-
+    io.Fonts.TexData.TexID = cast(ImTextureID)cast(size_t)fontTexture.id;
 }
 
 void rigRun() {
@@ -83,21 +62,21 @@ void rigRun() {
         character = GetCharPressed();
     }
 
-    for (int i = 0; i < 512; i++) {
-        io.KeysDown[i] = IsKeyDown(cast(KeyboardKey)i);
-    }
+    io.ImGuiIO_AddKeyEvent(
+        ImGuiKey.Backspace,
+        IsKeyDown(KeyboardKey.KEY_BACKSPACE)
+    );
 
-    io.KeyCtrl = IsKeyDown(KeyboardKey.KEY_LEFT_CONTROL) || IsKeyDown(KeyboardKey.KEY_RIGHT_CONTROL);
-    io.KeyShift = IsKeyDown(KeyboardKey.KEY_LEFT_SHIFT) || IsKeyDown(KeyboardKey.KEY_RIGHT_SHIFT);
-    io.KeyAlt = IsKeyDown(KeyboardKey.KEY_LEFT_ALT) || IsKeyDown(KeyboardKey.KEY_RIGHT_ALT);
-    io.KeySuper = IsKeyDown(KeyboardKey.KEY_LEFT_SUPER) || IsKeyDown(KeyboardKey.KEY_RIGHT_SUPER);
+    io.ImGuiIO_AddKeyEvent(
+        ImGuiKey.Enter,
+        IsKeyDown(KeyboardKey.KEY_ENTER)
+    );
 
 }
 
 void rigRender() {
     igRender();
     auto drawData = igGetDrawData();
-    auto defaultTexture = fontTexture; 
     if (drawData == null) return;
 
     for (int n = 0; n < drawData.CmdListsCount; n++) 
@@ -110,10 +89,8 @@ void rigRender() {
         {
             ImDrawCmd* pcmd = &cmdList.CmdBuffer.Data[cmdi];
             
-            uint currentTextureId = (pcmd.TextureId != null) ? cast(uint)cast(size_t)pcmd.TextureId : defaultTexture.id;
-
+            rlSetTexture(cast(uint)io.Fonts.TexData.TexID);
             rlBegin(RL_TRIANGLES);
-            rlSetTexture(currentTextureId);
 
             for (uint i = 0; i < pcmd.ElemCount; i += 3) 
             {

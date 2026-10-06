@@ -1,3 +1,3 @@
-module rmgui;
+module rimgui;
 
-public import rmgui.core;
+public import rimgui.core;

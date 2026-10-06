@@ -8,7 +8,7 @@ RImGui is a helper library designed to make implementing dear ImGui easy in your
 
 ```D
 import raylib;
-import bindbc.imgui;
+import i2d.imgui;
 import rimgui;
 
 void main(){

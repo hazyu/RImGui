@@ -1,4 +1,4 @@
-module rmgui.core;
+module rimgui.core;
 
 import i2d.imgui;
 import std.stdio;

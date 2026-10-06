@@ -1,6 +1,6 @@
 {
     "name": "rimgui",
-    "description": "ImGui helper library for raylib-d",
+    "description": "ImGui helper library for raylib-d and bindbc-imgui",
     "authors": ["Hazyu"],
     "copyright": "Copyright © 2026, Hazyu",
     "license": "MIT",

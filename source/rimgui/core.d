@@ -164,5 +164,6 @@ void rigRender() {
     rlSetTexture(0);
 }
 
-void rigEnd() {
+void rigClose() {
+    igDestroyContext(ctx);
 }

@@ -1,0 +1,22 @@
+{
+    "name": "rimgui",
+    "description": "ImGui helper library for raylib-d",
+    "authors": ["Hazyu"],
+    "copyright": "Copyright © 2026, Hazyu",
+    "license": "MIT",
+    "targetType": "library",
+    "dependencies": {
+        "raylib-d": "~>6.0.1",
+        "bindbc-imgui": "~>0.7.0"
+    },
+    "subConfigurations": {
+        "bindbc-imgui": "dynamic_dynamicCRT"
+    },
+    "libs": ["raylib"],
+    "lflags-posix": ["-L."],
+    "lflags-linux": ["-rpath=$$ORIGIN"],
+    "lflags-osx": [
+        "-rpath", 
+        "@executable_path/"
+    ]
+}
